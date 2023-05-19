@@ -1,0 +1,44 @@
+name: Frontend CICD
+on:
+  workflow_dispatch:
+  push:
+    branches: 
+      - 'master'
+    paths:
+      - 'frontend/*'
+      - '.github/workflows/cicd-frontend.yaml'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - name:  Build and Test Node
+        working-directory: ./frontend
+        run: |
+          pwd
+          npm ci
+          pwd
+          npm run build
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_NAME }}.azurecr.io
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./frontend/
+          push: true
+          tags: ${{ secrets.REGISTRY_NAME }}.azurecr.io/todo-frontend:latest, ${{ secrets.REGISTRY_NAME }}.azurecr.io/todo-frontend:${{ github.sha }}

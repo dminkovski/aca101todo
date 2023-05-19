@@ -1,0 +1,44 @@
+# .github/workflows/cicd-go.yml
+name: Go API CICD
+on:
+  workflow_dispatch:
+  push:
+    branches: 
+      - 'master'
+    paths:
+      - 'api/*'
+      - '.github/workflows/cicd-go-api.yaml'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.19.x'
+      - name: Build and test Go application
+        working-directory: ./api
+        run: |
+          go build
+          go test ./...
+  deploy:
+    #runs-on: self-hosted
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_NAME }}.azurecr.io
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./api/
+          push: true
+          tags: ${{ secrets.REGISTRY_NAME }}.azurecr.io/todo-api:latest, ${{ secrets.REGISTRY_NAME }}.azurecr.io/todo-api:${{ github.sha }}
