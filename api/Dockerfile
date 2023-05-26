@@ -11,10 +11,10 @@ RUN go mod download
 RUN go mod tidy
 
 # Build executable
-RUN CGO_ENABLED=0 GOOS=linux go build -o /certsplace-api
+RUN CGO_ENABLED=0 GOOS=linux go build -o /todo-api
 
 # Expose Port
 EXPOSE 8080
 
 # Run
-CMD ["/certsplace-api"]
+CMD ["/todo-api"]
