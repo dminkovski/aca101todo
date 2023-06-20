@@ -20,8 +20,8 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
     managedEnvironmentId: containerAppsEnvironmentId
     configuration: {
       ingress: {
-        external: true
-        targetPort: 3000
+        external: false
+        targetPort: 8080
       }
     }
     template: {
@@ -33,19 +33,19 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             {
               type: 'Liveness'
               httpGet: {
-                path: '/health'
-                port: 3000
+                path: '/'
+                port: 8080
               }
-              periodSeconds: 10
-              failureThreshold: 3
-              initialDelaySeconds: 20
+              periodSeconds: 25
+              failureThreshold: 5
+              initialDelaySeconds: 45
             }
           ]
         }
       ]
       scale: {
         minReplicas: 1
-        maxReplicas: 10
+        maxReplicas: 3
       }
     }
   }
