@@ -1,7 +1,5 @@
-# App Inno Workshop (internal) for Azure Container Apps, App Service and FrontDoor
-
 ## Motivation
-Create a Hands-On workshop for Cloud Solution Architects looking to implement Azure Container Apps and FrontDoor as an alternative to AKS.
+Create a Hands-On workshop to implement Azure Container Apps and FrontDoor as an alternative to AKS.
 
 ## Business Application Project 
 Introducing the Ultimate Todo App:
